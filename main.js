@@ -173,13 +173,6 @@ document.querySelector(".radio-grp").addEventListener(
   function(e) {
     console.log("clicked");
     var color = e.target.value;
-    var mat3d = object3d.children[2].material;
-
-    object3d.children[2].position.y = 5;
-    object3d.children[2].position.x = 2;
-    mat3d.needsUpdate = true;
-    mat3d.wrapAround = true;
-    mat3d.wrapS = THREE.RepeatWrapping;
     var newColor = new THREE.Color(color);
     object3d.children[1].children[0].children[5].material.color = newColor;
   },
