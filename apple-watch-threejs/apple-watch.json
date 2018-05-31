@@ -106,16 +106,6 @@
                     "geometry": "F9015723-083F-3827-BB0D-D9E04AB425C5"
                 }]
             }]
-        },{
-            "name": "Textbox1",
-            "uuid": "BC781D4B-0408-3487-BB77-9E5B677B2BC7",
-            "matrix": [-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-            "visible": true,
-            "type": "Mesh",
-            "material": "B92F5ACA-E24A-3A69-B2DD-69B8C9C5682C",
-            "castShadow": true,
-            "receiveShadow": true,
-            "geometry": "679B744D-6933-3291-83FA-B7921F213E6A"
         }],
         "matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
     },
