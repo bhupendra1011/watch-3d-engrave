@@ -16,6 +16,7 @@ var windowHalfY = window.innerHeight / 2;
 var backDialMaterial = {};
 var strapMaterial = {};
 var textmesh = {};
+var textureCanvas = {};
 //initailize
 init();
 animate();
@@ -64,7 +65,7 @@ function init() {
   // set camera position :
   //camera.position.set(0, 20, 100);
   camera.position.z = 20;
-  controls.autoRotate = true;
+  // controls.autoRotate = true;
   controls.autoRotateSpeed = 5;
   //controls.update();
   controls.enableDamping = false;
@@ -98,7 +99,7 @@ function init() {
   container.appendChild(renderer.domElement);
   //document.addEventListener("mousemove", onDocumentMouseMove, false);
   //load text
-  //engraveTextOnWatch("AKA");
+  //engraveTextOnWatch("AA");
   window.addEventListener("resize", onWindowResize, false);
 }
 
@@ -136,6 +137,15 @@ document.querySelector(".radio-grp-dial").addEventListener(
   false
 );
 
+// to engrsave text on watch engraveSelect
+// for loading textures
+document.querySelector(".engraveSelect").addEventListener(
+  "change",
+  function(e) {
+    e.currentTarget.checked ? engraveTextOnWatch() : clearCanvas();
+  },
+  false
+);
 // for loading textures
 document.querySelector(".textureSelect").addEventListener(
   "change",
@@ -152,12 +162,9 @@ document.querySelector(".textureSelect").addEventListener(
 
         var watch_geo = object3d.children[1].children[0].children[5].geometry;
         var parent_obj = object3d.children[1].children[0].children[5].parent;
-
         object3d.children[1].children[0].children[5].material = material;
-
-        var light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
-        scene.add(light);
-        engraveTextOnWatch();
+        // var light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+        // scene.add(light);
       });
     } else {
       object3d.children[1].children[0].children[5].material = oldMaterial;
@@ -185,30 +192,77 @@ document.querySelector("#engtxt").addEventListener(
   function(e) {
     var val = e.currentTarget.value;
     console.log("engrave text : " + val);
-    dynamicTexture.clear().drawText(val, 2, 256, "orange");
+    dynamicTexture.clear().drawText(val, 0, 10, "orange");
   },
   false
 );
 
 // engrave text
-function engraveTextOnWatch(val = "IWC") {
-  dynamicTexture = new THREEx.DynamicTexture(512, 512);
-  dynamicTexture.context.font = "bolder 90px Verdana";
+function engraveTextOnWatch(val = "ok") {
+  // dynamicTexture = new THREEx.DynamicTexture(40, 40);
+  //dynamicTexture.context.font = "bolder 60px Verdana";
 
   // watch back dial geometry & material where text needs to be engraved
+  var backDialMesh = object3d.children[1].children[0].children[0];
   var backDialGeometry = object3d.children[1].children[0].children[0].geometry;
   var backDialMaterial = object3d.children[1].children[0].children[0].material;
+  // seprataing mesh from watch object
 
   // geometry to add dynamic text
-  var geometry = new THREE.CubeGeometry(1, 1, 1);
+  //var geometry = new THREE.CubeGeometry(1, 1, 1);
+  /*
+  var geometry = new THREE.CircleGeometry(5, 32);
   var material = new THREE.MeshBasicMaterial({
-    map: dynamicTexture.texture
+    map: dynamicTexture.texture,
+    color: 0xffff00
   });
   var mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh); // adding mesh to scene , but this needs to be attache to watch's back dial geomtry
-  /* tried adding dynamicTexture to watch back dial material, but this is not working , text not appearing */
-  //backDialMaterial.map = dynamicTexture.texture;
+  // tried adding dynamicTexture to watch back dial material, but this is not working , text not appearing 
+  backDialMaterial.map = dynamicTexture.texture;
 
   dynamicTexture.texture.needsUpdate = true;
-  dynamicTexture.drawText(val, 2, 256, "orange");
+  dynamicTexture.drawText(val, 10, 10, "orange");  
+  */
+
+  // create canvas for drawing
+  var canvas = document.createElement("canvas");
+  canvas.id = "TextLayer";
+  canvas.width = 50;
+  canvas.height = 50;
+  canvas.style.position = "absolute1";
+  var context = canvas.getContext("2d");
+  context.font = "30px serif";
+  context.fillStyle = "blue";
+  var up = document.querySelector(".text");
+  //up.appendChild(canvas);
+  // align text horizontally center
+  context.textAlign = "center";
+  // align text vertically center
+  context.textBaseline = "middle";
+  //context.fillText("Hi", 20, 20);
+  // Also added canvas
+  draw3dText(context, "ab", 20, 20, 2);
+  // this is to check in dom if we anything gets printed on canvas
+  document.querySelector(".text").appendChild(canvas);
+  textureCanvas = new THREE.Texture(canvas);
+  textureCanvas.needsUpdate = true;
+
+  backDialMaterial.map = textureCanvas;
+  backDialMaterial.needsUpdate = true;
+  var light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+  //scene.add(light);
+}
+
+function draw3dText(context, text, x, y, textDepth) {
+  var n;
+  // draw bottom layers
+  for (n = 0; n < textDepth; n++) {
+    context.fillText(text, x - n, y - n);
+  }
+}
+
+function clearCanvas() {
+  var canvas = document.querySelector("#TextLayer");
+  canvas.width = canvas.width;
 }

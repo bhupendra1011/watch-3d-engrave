@@ -10,7 +10,7 @@
             text-align: center;
         }
 
-        canvas {
+        canvas:not(#TextLayer) {
             width: 95% !important;
             height: 80% !important;
             cursor: url(https://hapticmedia.fr/_server/_system/media/cursor/curseur_fleche.cur), move;
@@ -24,7 +24,7 @@
         .up {
             width: 50%;
             margin: 0 auto;
-
+            float: left
         }
 
         .down {
@@ -36,6 +36,14 @@
         input {
             margin-bottom: 10px;
         }
+
+        .text {
+            width: 200px;
+            height: 150px;
+            border: 1px solid red;
+            float: right;
+            margin-right: 100px;
+        }
     </style>
 </head>
 
@@ -45,7 +53,7 @@
             <fieldset>
                 <legend> Customize Watch :</legend>
                 <label for="engtxt">Engraved Text :</label>
-                <input type="text" id="engtxt" value="IWC" maxlength="4" />
+                <input type="text" id="engtxt" value="MY" maxlength="4" />
                 <br> Embossed Text:
                 <input type="text" id="embosstxt" maxlength="5">
                 <div class="radio-grp">
@@ -65,13 +73,23 @@
                 <div class="custom-strap">
                     <label>
                         <input class="textureSelect" type="checkbox">Use Textures</label>
+
+                    <label>
+                        <input class="engraveSelect" type="checkbox">Use Engraved Text</label>
                 </div>
             </fieldset>
+        </div>
+
+        <div class="text">
+            <span> To verify text on canvas</span>
+
         </div>
         <div class="down">
             <progress id="progressBar" value="2" max="100"></progress>
         </div>
+
     </div>
+
     <!--<script src="three.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/92/three.min.js"></script>
     <script src="orbitControls.js"></script>
