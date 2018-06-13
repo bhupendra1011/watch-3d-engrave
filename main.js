@@ -17,6 +17,10 @@ var backDialMaterial = {};
 var strapMaterial = {};
 var textmesh = {};
 var textureCanvas = {};
+var textCanvas = document.querySelector("#textCanvas");
+var engravedText = new THREE.Texture();
+var backPlateMaterial = new THREE.MeshBasicMaterial({ map: engravedText });
+
 //initailize
 init();
 animate();
@@ -25,7 +29,7 @@ function loadObject() {
   // progress loader
   var onProgress = function(xhr) {
     if (xhr.lengthComputable) {
-      var percentComplete = xhr.loaded / xhr.total * 100;
+      var percentComplete = (xhr.loaded / xhr.total) * 100;
       console.log(Math.round(percentComplete, 2) + "% downloaded");
       document.querySelector("#progressBar").value = percentComplete;
     }
@@ -34,9 +38,10 @@ function loadObject() {
   var onError = function(xhr) {};
 
   // BEGIN Clara.io JSON loader code
+  /*
   var objectLoader = new THREE.ObjectLoader(); //three.js:36170 THREE.JSONLoader: watch.scene-json/watch.json should be loaded with THREE.ObjectLoader instead.
   objectLoader.load(
-    "apple-watch-threejs/apple-watch.json",
+    "apple-watch-threejs/app.json",
     //"https://dl.dropboxusercontent.com/s/1sbfsk9e7wkq8t9/apple-watch.json",
     function(obj) {
       object3d = obj;
@@ -49,7 +54,32 @@ function loadObject() {
     },
     onProgress,
     onError
-  );
+  ); */
+  // load newer object model
+
+  THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
+
+  new THREE.MTLLoader()
+    .setPath("model/")
+    .load("apple-watch.mtl", function(materials) {
+      materials.preload();
+
+      new THREE.OBJLoader()
+        .setMaterials(materials)
+        .setPath("model/")
+        .load(
+          "apple-watch.obj",
+          function(object) {
+            object3d = object;
+            scene.add(object3d);
+            strapMaterial = object3d.children[2].material;
+            backDialMaterial = object3d.children[5].material;
+            oldMaterial = JSON.parse(JSON.stringify(strapMaterial));
+          },
+          onProgress,
+          onError
+        );
+    });
 }
 
 function init() {
@@ -65,9 +95,9 @@ function init() {
   // set camera position :
   //camera.position.set(0, 20, 100);
   camera.position.z = 20;
-  // controls.autoRotate = true;
-  controls.autoRotateSpeed = 5;
-  //controls.update();
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 3;
+  controls.update();
   controls.enableDamping = false;
 
   // scene
@@ -159,15 +189,12 @@ document.querySelector(".textureSelect").addEventListener(
           map: tex,
           depthWrite: true
         });
-
-        var watch_geo = object3d.children[1].children[0].children[5].geometry;
-        var parent_obj = object3d.children[1].children[0].children[5].parent;
-        object3d.children[1].children[0].children[5].material = material;
+        object3d.children[2].material = material;
         // var light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
         // scene.add(light);
       });
     } else {
-      object3d.children[1].children[0].children[5].material = oldMaterial;
+      //object3d.children[2].material = oldMaterial;
       loadObject();
     }
   },
@@ -181,75 +208,41 @@ document.querySelector(".radio-grp").addEventListener(
     console.log("clicked");
     var color = e.target.value;
     var newColor = new THREE.Color(color);
-    object3d.children[1].children[0].children[5].material.color = newColor;
+    strapMaterial.color = newColor;
   },
   false
 );
 
 //engraving text logic
 document.querySelector("#engtxt").addEventListener(
-  "keydown",
+  "input",
   function(e) {
     var val = e.currentTarget.value;
     console.log("engrave text : " + val);
-    dynamicTexture.clear().drawText(val, 0, 10, "orange");
+    engraveTextOnWatch(val);
   },
   false
 );
 
 // engrave text
-function engraveTextOnWatch(val = "ok") {
-  // dynamicTexture = new THREEx.DynamicTexture(40, 40);
-  //dynamicTexture.context.font = "bolder 60px Verdana";
-
-  // watch back dial geometry & material where text needs to be engraved
-  var backDialMesh = object3d.children[1].children[0].children[0];
-  var backDialGeometry = object3d.children[1].children[0].children[0].geometry;
-  var backDialMaterial = object3d.children[1].children[0].children[0].material;
-  // seprataing mesh from watch object
-
-  // geometry to add dynamic text
-  //var geometry = new THREE.CubeGeometry(1, 1, 1);
-  /*
-  var geometry = new THREE.CircleGeometry(5, 32);
-  var material = new THREE.MeshBasicMaterial({
-    map: dynamicTexture.texture,
-    color: 0xffff00
-  });
-  var mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh); // adding mesh to scene , but this needs to be attache to watch's back dial geomtry
-  // tried adding dynamicTexture to watch back dial material, but this is not working , text not appearing 
-  backDialMaterial.map = dynamicTexture.texture;
-
-  dynamicTexture.texture.needsUpdate = true;
-  dynamicTexture.drawText(val, 10, 10, "orange");  
-  */
-
-  // create canvas for drawing
-  var canvas = document.createElement("canvas");
-  canvas.id = "TextLayer";
-  canvas.width = 50;
-  canvas.height = 50;
-  canvas.style.position = "absolute1";
-  var context = canvas.getContext("2d");
-  context.font = "30px serif";
+function engraveTextOnWatch(val = document.querySelector("#engtxt").value) {
+  // add text upon watch's back dial
+  clearCanvas();
+  var context = textCanvas.getContext("2d");
+  context.font = "30px Arial";
+  //context.shadowColor = "red";
   context.fillStyle = "blue";
-  var up = document.querySelector(".text");
-  //up.appendChild(canvas);
-  // align text horizontally center
+  context.fill();
+  context.fillStyle = "green";
   context.textAlign = "center";
-  // align text vertically center
   context.textBaseline = "middle";
-  //context.fillText("Hi", 20, 20);
-  // Also added canvas
-  draw3dText(context, "ab", 20, 20, 2);
-  // this is to check in dom if we anything gets printed on canvas
-  document.querySelector(".text").appendChild(canvas);
-  textureCanvas = new THREE.Texture(canvas);
-  textureCanvas.needsUpdate = true;
+  draw3dText(context, val, 70, 70, 1);
 
-  backDialMaterial.map = textureCanvas;
-  backDialMaterial.needsUpdate = true;
+  engravedText.image = textCanvas;
+  engravedText.needsUpdate = true;
+  object3d.children[5].material = backPlateMaterial;
+  object3d.children[5].material.needsUpdate = true;
+
   var light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
   //scene.add(light);
 }
@@ -258,11 +251,15 @@ function draw3dText(context, text, x, y, textDepth) {
   var n;
   // draw bottom layers
   for (n = 0; n < textDepth; n++) {
-    context.fillText(text, x - n, y - n);
+    context.fillText(
+      text.split("").join(String.fromCharCode(46)),
+      x - n,
+      y - n
+    );
   }
 }
 
 function clearCanvas() {
-  var canvas = document.querySelector("#TextLayer");
+  var canvas = document.querySelector("#textCanvas");
   canvas.width = canvas.width;
 }

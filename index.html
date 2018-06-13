@@ -38,9 +38,7 @@
         }
 
         .text {
-            width: 200px;
-            height: 150px;
-            border: 1px solid red;
+
             float: right;
             margin-right: 100px;
         }
@@ -53,7 +51,7 @@
             <fieldset>
                 <legend> Customize Watch :</legend>
                 <label for="engtxt">Engraved Text :</label>
-                <input type="text" id="engtxt" value="MY" maxlength="4" />
+                <input type="text" id="engtxt" maxlength="5" />
                 <br> Embossed Text:
                 <input type="text" id="embosstxt" maxlength="5">
                 <div class="radio-grp">
@@ -72,7 +70,7 @@
                 </div>
                 <div class="custom-strap">
                     <label>
-                        <input class="textureSelect" type="checkbox">Use Textures</label>
+                        <input class="textureSelect" type="checkbox">Use Leather Strap</label>
 
                     <label>
                         <input class="engraveSelect" type="checkbox">Use Engraved Text</label>
@@ -81,7 +79,9 @@
         </div>
 
         <div class="text">
-            <span> To verify text on canvas</span>
+            <canvas id="textCanvas" width="150" height="150" style="border:1px solid #d3d3d3;">
+                Your browser does not support the canvas element.
+            </canvas>
 
         </div>
         <div class="down">
@@ -95,6 +95,9 @@
     <script src="orbitControls.js"></script>
     <script src="detector.js"></script>
     <script src="dynamicTexture.js"></script>
+    <script src="js/DDSLoader.js"></script>
+    <script src="js/MTLLoader.js"></script>
+    <script src="js/OBJLoader.js"></script>
     <script src="main.js"></script>
 
 </body>
