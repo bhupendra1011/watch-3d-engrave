@@ -51,7 +51,8 @@
             <fieldset>
                 <legend> Customize Watch :</legend>
                 <label for="engtxt">Engraved Text :</label>
-                <input type="text" id="engtxt" maxlength="5" />
+                <input autofocus type="text" id="engtxt" maxlength="5" placeholder="Enter Text here ..." />
+                <!--
                 <br> Embossed Text:
                 <input type="text" id="embosstxt" maxlength="5">
                 <div class="radio-grp">
@@ -75,11 +76,12 @@
                     <label>
                         <input class="engraveSelect" type="checkbox">Use Engraved Text</label>
                 </div>
+            -->
             </fieldset>
         </div>
 
         <div class="text">
-            <canvas id="textCanvas" width="150" height="150" style="border:1px solid #d3d3d3;">
+            <canvas id="textCanvas" width="128" height="128" style="border:1px solid red;">
                 Your browser does not support the canvas element.
             </canvas>
 
@@ -92,13 +94,14 @@
 
     <!--<script src="three.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/92/three.min.js"></script>
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
     <script src="orbitControls.js"></script>
     <script src="detector.js"></script>
     <script src="dynamicTexture.js"></script>
     <script src="js/DDSLoader.js"></script>
     <script src="js/MTLLoader.js"></script>
     <script src="js/OBJLoader.js"></script>
-    <script src="main.js"></script>
+    <script src="main1.js"></script>
 
 </body>
 
