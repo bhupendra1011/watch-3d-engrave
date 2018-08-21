@@ -279,3 +279,7 @@ function clearCanvas() {
   var canvas = document.querySelector("#textCanvas");
   canvas.width = canvas.width;
 }
+
+setTimeout() {
+  
+}
